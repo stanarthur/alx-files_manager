@@ -3,6 +3,7 @@
 MongoDB utils
 */
 const { MongoClient } = require('mongodb');
+const { createHash } = require('crypto');
 const USERS  = "users";
 const FILES = "files";
 
@@ -27,6 +28,7 @@ class DBClient{
         });
     }
     isAlive() {
+        // Checks connection status if alive or not
         if (this.client.connected) {
             return true;
         }
@@ -50,6 +52,28 @@ class DBClient{
         const numfiles = await files.countDocuments();
         return numfiles;
     }
+    async userExists(email) {
+        // Checks if a user by `email` exists
+        await this.client.connect();
+        const db = this.client.db(this.database);
+        const users = db.collection(USERS);
+        const user = await users.findOne({ email });
+        if (!user) {
+            return false;
+        }
+        return true;
+    }
+    async createUser(email, password) {
+        // Creates a user by `email` and `password`
+        const hashedpwd = createHash("sha1").update(password).digest("hex");
+        await this.client.connect();
+        const db = this.client.db(this.database);
+        const users = db.collection(USERS);
+        const data = {email: email, password: hashedpwd};
+        const user = await users.insertOne(data);
+        return { email, id: user.insertedId };
+    }
 }
+
 const dbClient = new DBClient();
 module.exports = dbClient;
