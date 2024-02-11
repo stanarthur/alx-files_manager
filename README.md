@@ -32,3 +32,7 @@ Of course, this kind of service already exists in the real life - it’s a learn
 + how to store data in MongoDB
 + how to store temporary data in Redis
 + how to setup and use a background worker
+
+Authors:
+Joseph Nweke
+StanHope CHinonso
