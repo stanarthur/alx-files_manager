@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
 Redis utils
 */
@@ -7,10 +8,23 @@ const util = require("util");
 class RedisClient{
     constructor() {
         this.client = createClient();
-        this.client.on("error", err => console.log(`Redis connection error: ${err}`))
+        this.client
+        .on("error", err => {
+            // For debugging redis connection
+            // console.log(`Redis connection error: ${err}`);
+            this.client.connected = false;
+        })
+        .on("connect", () => {
+            // For debugging redis connection
+            // console.log("Connected to redis server");
+            this.client.connected = true;
+        });
     }
     isAlive() {
-        return this.client.connected;
+        if (this.client.connected) {
+            return true;
+        }
+        return false;
     }
     async get(key) {
         const asyncGet = util.promisify(this.client.get).bind(this.client);
