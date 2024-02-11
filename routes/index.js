@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
 Defines routes for different API endpoints.
 */

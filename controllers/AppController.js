@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
 Contains definitions for routes.
 */
