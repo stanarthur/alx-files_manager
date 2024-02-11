@@ -35,6 +35,7 @@ class DBClient{
         }
     }
     async nbUsers() {
+        // Async function that returns the number of users
         await this.client.connect();
         const db = this.client.db(this.database);
         const users = db.collection(USERS);
@@ -42,12 +43,13 @@ class DBClient{
         return numUsers;
     }
     async nbFiles() {
+        // Async function that returns the number of files
         await this.client.connect();
         const db = this.client.db(this.database);
         const files = db.collection(FILES);
         const numfiles = await files.countDocuments();
         return numfiles;
-}
+    }
 }
 const dbClient = new DBClient();
 module.exports = dbClient;
