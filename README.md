@@ -34,5 +34,5 @@ Of course, this kind of service already exists in the real life - it’s a learn
 + how to setup and use a background worker
 
 Authors:
-Joseph Nweke
-StanHope CHinonso
++ Joseph Nweke
++ Stanhope Chinonso
