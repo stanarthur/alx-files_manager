@@ -3,7 +3,9 @@
 MongoDB utils
 */
 const { MongoClient } = require('mongodb');
-const { createHash } = require('crypto');
+const { ObjectId } = require('mongodb');
+const passwordHasher = require("../utils/passwordHasher");
+
 const USERS  = "users";
 const FILES = "files";
 
@@ -27,6 +29,7 @@ class DBClient{
             this.client.connected = false;
         });
     }
+
     isAlive() {
         // Checks connection status if alive or not
         if (this.client.connected) {
@@ -36,6 +39,7 @@ class DBClient{
             return false;
         }
     }
+
     async nbUsers() {
         // Async function that returns the number of users
         await this.client.connect();
@@ -44,6 +48,7 @@ class DBClient{
         const numUsers = await users.countDocuments();
         return numUsers;
     }
+
     async nbFiles() {
         // Async function that returns the number of files
         await this.client.connect();
@@ -52,26 +57,42 @@ class DBClient{
         const numfiles = await files.countDocuments();
         return numfiles;
     }
-    async userExists(email) {
+
+    async userExists(email, password) {
         // Checks if a user by `email` exists
+        const hashedPwd = passwordHasher(password);
         await this.client.connect();
         const db = this.client.db(this.database);
         const users = db.collection(USERS);
-        const user = await users.findOne({ email });
+        const user = await users.findOne({ email: email, password: hashedPwd });
         if (!user) {
             return false;
         }
-        return true;
+        return user;
     }
+
     async createUser(email, password) {
         // Creates a user by `email` and `password`
-        const hashedpwd = createHash("sha1").update(password).digest("hex");
+        const hashedpwd = passwordHasher(password);
         await this.client.connect();
         const db = this.client.db(this.database);
         const users = db.collection(USERS);
         const data = {email: email, password: hashedpwd};
         const user = await users.insertOne(data);
         return { email, id: user.insertedId };
+    }
+
+    async getUserById(id) {
+        // Gets a user by id and returns user.id and user.email
+        await this.client.connect();
+        const db = this.client.db(this.database);
+        const users = db.collection(USERS);
+        const objectId = new ObjectId(id);
+        const user = await users.findOne({ _id: objectId });
+        if (user) {
+            return {id: user._id, email: user.email};
+        }
+        return null;
     }
 }
 
