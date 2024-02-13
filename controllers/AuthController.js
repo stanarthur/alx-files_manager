@@ -9,8 +9,8 @@ const passwordHasher = require("../utils/passwordHasher");
 
 class AuthController {
     static async getConnect(req, res) {
-        // Connects and existing user thereby creating token valid
-        // for 24hours on redis storage
+        // Connects an existing user thereby creating token valid
+        // for 24hours on redis storage as user identity
         const Authorization = req.headers.authorization;
         try {
             const basic = Authorization.split(" ")[0];
