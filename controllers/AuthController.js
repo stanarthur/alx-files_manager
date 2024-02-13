@@ -9,8 +9,8 @@ const passwordHasher = require("../utils/passwordHasher");
 
 class AuthController {
     static async getConnect(req, res) {
-        // Connects and existing user thereby creating token valid
-        // for 24hours on redis storage
+        // Connects an existing user thereby creating token valid
+        // for 24hours on redis storage as user identity
         const Authorization = req.headers.authorization;
         try {
             const basic = Authorization.split(" ")[0];
@@ -21,10 +21,10 @@ class AuthController {
                 const hashedPwd = passwordHasher(password);
                 const user = await dbClient.userExists(email, hashedPwd);
                 if (!user) {
-                    res.status(401).json({"error":"Unauthorized -> in getConnect"});
+                    res.status(401).json({"error":"Unauthorized"});
                 }
                 else {
-                    const token = uuid.v4()
+                    const token = uuid.v4();
                     const key = `auth_${token}`;
                     const userId = user._id.toString();
                     if (userId) {
@@ -35,12 +35,12 @@ class AuthController {
             }
         }
         catch(err) {
-            res.status(401).json({"error":"Unauthorized -> Outer"});
+            res.status(401).json({"error":"Unauthorized"});
         }
     }
 
     static async getDisconnect(req, res) {
-        // Manually Logsout or deletes a users token from redis
+        // Manually Logs-out or deletes a users token from redis
         // storage/server
         const xToken = req.header("X-Token");
         if (xToken) {
