@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { createHash } = require('node:crypto');
+const { createHash } = require('crypto');
 
 const passwordHasher = function(password) {
     // Creates and returns a hashed value with `sha1` hash algorithm
